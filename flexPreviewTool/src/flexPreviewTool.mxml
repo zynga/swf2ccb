@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2013 Zynga Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   creationComplete="init()"
+					   height="800"
+					   width="1200"
+					   backgroundAlpha="0">
+	<fx:Declarations>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flash.desktop.NativeDragManager;
+			import flash.events.NativeDragEvent;
+			
+			import starling.asset.Asset;
+			import starling.asset.AssetContext;
+			import starling.core.Starling;
+			import starling.display.DisplayObject;
+			import starling.events.Event;
+			import starling.textures.Texture;
+			
+			private var m_currentPath:String;
+			private var m_currentFileName:String;
+			private var m_shared:Boolean;
+			private var m_asset:Asset;
+			private var m_symbols:Array;
+			private var m_defaultChoice:String = "<Preview a Symbol>";
+			private var m_currentObject:starling.display.DisplayObject;
+			
+			private var context:LoaderContext = new LoaderContext(false, new ApplicationDomain(ApplicationDomain.currentDomain));
+			private static var s_sharedContext:AssetContext = new AssetContext();
+			private static var s_textureCache:Dictionary = new Dictionary();
+			private static var s_assets:Dictionary = new Dictionary();
+			
+			private var dropfiles:Array = new Array();
+			
+			private var mDefaultQuality:Number = 5.0;
+			
+			private function init():void{
+				var s:Starling = new Starling(starling.display.Sprite, this.systemManager.stage);
+				s.makeCurrent();
+				
+				s.addEventListener(starling.events.Event.CONTEXT3D_CREATE, onContext3DCreated);
+				devices.addItem("iPad Retina");
+				devices.addItem("iPad/iPhone HD");
+				devices.addItem("iPhone");
+				
+				bitmapQ.selectedIndex = 0;
+				
+				devices0.addItem("iPad Retina");
+				devices0.addItem("iPad/iPhone HD");
+				devices0.addItem("iPhone");
+				basicG.selectedIndex = 2;
+			}
+			
+			private function onContext3DCreated(ev:starling.events.Event):void {
+				Starling.current.start();
+				
+				context.allowCodeImport = true;
+				
+				this.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER,onDragEnter);
+				this.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP,onDrop);
+			}
+			
+			public function onDragEnter(event:NativeDragEvent):void{
+				NativeDragManager.acceptDragDrop(this);
+			}
+			
+			public function onDrop(event:NativeDragEvent):void{
+				dropfiles = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+				
+				tryNextFile();
+			}
+			
+			private function onLoadDirectory(event:flash.events.Event):void {
+				var directory:File = File.documentsDirectory;
+				directory.browseForDirectory("Select Directory");
+				directory.addEventListener(flash.events.Event.SELECT, directorySelected);
+				errorNotice.visible = false;
+				notSupported.visible = false;
+			}
+			
+			private function directorySelected(event:flash.events.Event):void 
+			{
+				var directory:File = File.documentsDirectory;
+				directory = event.target as File;
+				dropfiles = directory.getDirectoryListing();
+				
+				tryNextFile();
+			}
+			
+			private function tryNextFile():void {
+				if (dropfiles.length > 0) {
+					var f:File = File(dropfiles[0]);
+					if (f.type == "SWFL") {
+						fileDirPath = f.nativePath.substr(0, f.nativePath.lastIndexOf("/")+1);
+						loadAssetFile(f.nativePath);
+					}
+					else {
+						if (f.isDirectory) {
+							var files:Array = f.getDirectoryListing();
+							
+							for each (var file:File in files) {
+								dropfiles.push(file);
+							}
+							
+							dropfiles.shift();
+							tryNextFile();
+							
+						}
+						else {
+							dropfiles.shift();
+							tryNextFile();
+						}
+					}
+				}
+			}
+			
+			protected function onLoadFile(event:flash.events.Event): void
+			{
+				var f:File = new File();
+				f.browseForOpen("Open File");
+				f.addEventListener(flash.events.Event.SELECT, onFileSelected);
+				errorNotice.visible = false;
+			}
+			
+			protected function onFileSelected(ev:flash.events.Event):void {
+				var f:File = File(ev.target);
+				m_currentPath = m_currentFileName = null;
+				fileDirPath = f.nativePath.substr(0, f.nativePath.lastIndexOf("/")+1);
+				
+				loadAssetFile(f.nativePath);
+			}
+			
+			public function loadAssetFile(path:String):void {
+				clearAll();
+				m_currentPath = path;
+				m_currentFileName = getFileName(path);
+				var loader:URLLoader = new URLLoader();
+				loader.dataFormat = URLLoaderDataFormat.BINARY;
+				var urlReq:URLRequest = new URLRequest("file://" + path);
+				loader.addEventListener(flash.events.Event.COMPLETE, loadBytes);
+				loader.load(urlReq);
+			}
+			
+			private function clearAll():void {
+				if (m_symbols) {
+					m_symbols = null;
+				}
+				
+				if (m_currentObject) {
+					Starling.current.stage.removeChild(m_currentObject);
+					m_currentObject.dispose();
+					m_currentObject = null;
+				}
+				
+				if (m_asset) {
+					m_asset.dispose();
+					m_asset = null;
+				}
+				sweepTextureCache();
+				
+				context = new LoaderContext(false, new ApplicationDomain(ApplicationDomain.currentDomain));
+				context.allowCodeImport = true;
+			}
+			
+			private static function getFileName(path:String):String {
+				var p1:int = path.lastIndexOf("/");
+				p1 = (p1 < 0) ? 0 : p1 + 1;
+				var p2:int = path.lastIndexOf(".");
+				p2 = (p2 < 0) ? path.length : p2;
+				return path.substr(p1, p2 - p1);
+			}
+			
+			
+			private function loadBytes(event:flash.events.Event):void {
+				var uloader:URLLoader = URLLoader(event.target);
+				var loader:Loader = new Loader();
+				var bytes:ByteArray = ByteArray(event.target.data);
+				uloader.removeEventListener(flash.events.Event.COMPLETE, loadBytes);
+				var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
+				loaderInfo.addEventListener(flash.events.Event.COMPLETE, loadDone);
+				loader.loadBytes(bytes, context);
+			}
+			
+			private function loadDone(event:flash.events.Event):void {				
+				var stackTrace:String;
+				
+				try {
+					loaderInfo.removeEventListener(flash.events.Event.COMPLETE, loadDone);
+					
+					var asset:Asset;
+					
+					// Register shared symbols
+					var url:String = m_currentPath;
+					var fileName:String = getFileName(url);
+					var rootSymbolName:String = fileName;
+					var cl:Class = context.applicationDomain.getDefinition(rootSymbolName) as Class;
+					var dispObj:flash.display.DisplayObject = flash.display.DisplayObject(new cl());
+					
+					var num:Number = 2.2 * Math.pow(0.5, bitmapQ.selectedIndex);
+					if (num && num != 0) {
+						Asset.drawScale = num;
+					}
+					
+					Asset.quality = Math.pow(2, mDefaultQuality - quality.value);
+					
+					asset = Asset.fromDisplayObject(dispObj, fileName, s_sharedContext, m_shared, false);
+					
+					var cantConvert:String = asset.getNotSupported();
+					
+					if (cantConvert.length > 0) {
+						notSupported.text = cantConvert;
+						notSupported.visible = true;
+					}
+					
+					registerStarlingAsset(asset);
+					
+					m_asset = asset;
+					
+					m_currentObject = m_asset.createInstance(asset.rootSymbolName, s_textureCache);
+					
+					m_currentObject.x = width/2;
+					m_currentObject.y = height/2;
+					
+					Starling.current.stage.addChild(m_currentObject);
+					
+					onAssetLoaded();
+				}
+				catch (e:Error) {
+					stackTrace = e.getStackTrace();
+				}
+				
+				if (stackTrace) {
+					var fname:File = new File(url.substr(0, url.lastIndexOf("/"))+"/error.txt");
+					var fstrm:FileStream = new FileStream();
+					var byteArray:ByteArray = new ByteArray();
+					stackTrace = url + "\n" + stackTrace;
+					byteArray.writeUTFBytes(stackTrace);
+					
+					try {
+						fstrm.open(fname, FileMode.WRITE);
+						fstrm.writeBytes(byteArray);
+						fstrm.close();
+					} catch (e:Error) {
+						trace("Unable to save json file '" + url + "': " + e.message);
+					}
+					errorNotice.visible = true;
+				}
+			}
+			
+			private function onAssetLoaded():void {
+					
+				// Add new symbols loaded..
+				m_symbols = m_asset.getSymbolNames();
+				m_symbols.sort(Array.CASEINSENSITIVE);
+				
+				if (check1.selected) {
+					ccbPath = fileDirPath;
+					ccbDir = new File(fileDirPath);
+					getBMDir();
+				}
+				else {
+					exportFile();
+				}
+			}
+			
+			public function registerSharedAssetClass(assetId:String, assetClass:Class):void {
+				var flashDispObj:flash.display.DisplayObjectContainer = new assetClass() as flash.display.DisplayObjectContainer;
+				var len:int = flashDispObj.numChildren;
+				
+				// Create the starling asset
+				Asset.setFilterCallback(filterNonSymbolRootItems);
+				var asset:Asset = Asset.fromDisplayObject(flashDispObj, assetId, s_sharedContext, true);
+				Asset.setFilterCallback(null);
+				
+				// Register it and all of it's sub-symbols.
+				registerStarlingAsset(asset);
+			}
+			
+			public function registerStarlingAsset(asset:Asset, symbol:String = "@root"):void {
+				var assetId:String = symbol == "@root" ? asset.name : symbol;
+				s_assets[assetId] = function():starling.display.DisplayObject {
+					return asset.createInstance(symbol, s_textureCache);
+				};
+				if (symbol == "@root") {
+					var symbolNames:Array = asset.getSymbolNames();
+					for each (var symbolName:String in symbolNames) {
+						registerStarlingAsset(asset, symbolName);
+					}
+				}
+			}
+			
+			private function filterNonSymbolRootItems(asset:Asset, dispObj:flash.display.DisplayObject):Boolean {
+				// We only care about top level items..
+				if (dispObj.parent != null && dispObj.parent.parent == null) {
+					var cl:Class = Object(dispObj).constructor as Class;
+					var clName:String = getClassName(cl);
+					// Not a symbol if the class name isn't a custom type
+					if (clName == "" || clName.indexOf("flash.") == 0) {
+						return false;
+					}
+				}
+				// Everyting else is ok
+				return true;
+			}
+			
+			private var bitmapDir:File;
+			private var ccbDir:File;
+			private var ccbPath:String;
+			private var fileDirPath:String;
+			private var bmPath:String;
+			
+			protected function exportFile(): void
+			{
+				if (m_asset != null && ccbDir == null) {
+					ccbDir = File.desktopDirectory;
+
+					ccbDir.browseForDirectory("Outputting ccb for " + m_asset.name + ". Please choose output folder");
+					ccbDir.addEventListener(flash.events.Event.SELECT, exportCCBDirSelected);
+					ccbDir.addEventListener(flash.events.Event.CANCEL, exportCCBDirCancelled);
+				}
+				else if (ccbDir != null) {
+					if (bmPath) {
+						export(bmPath);
+					}
+					else {
+						getBMDir();
+					}
+				}
+			}
+			
+			private function exportCCBDirCancelled(e:flash.events.Event):void {
+				ccbDir = null;
+			}
+			
+			private function exportCCBDirSelected(e:flash.events.Event):void {
+				ccbPath = (e.target as File).nativePath;
+				if (ccbPath != "") {
+					ccbPath = ccbPath + "/";
+				}
+				ccbDir.removeEventListener(flash.events.Event.SELECT, exportCCBDirSelected);
+				
+				getBMDir();
+			}
+			private function getBMDir():void {
+				if (check2.selected) {
+					export("ccbResources/resources-auto/");
+				}
+				else {
+					bitmapDir = ccbDir.clone();
+					bitmapDir.browseForDirectory("Outputting bitmaps for " + m_asset.name + ". Please choose output folder");
+					bitmapDir.addEventListener(flash.events.Event.SELECT, exportBitmapDirSelected);
+				}
+			}
+			
+			private function exportBitmapDirSelected(e:flash.events.Event):void {
+				var pathToBitmap:String;
+				if (ccbDir.getRelativePath(bitmapDir, true) == "") {
+					pathToBitmap = "";
+				}
+				else {
+					pathToBitmap = ccbDir.getRelativePath(bitmapDir, true) + "/";
+				}
+				
+				export(pathToBitmap);
+			}
+			
+			private function export(pathToBitmap:String):void {
+				
+				var lastPart:String;
+				var origPathToBm:String = pathToBitmap;
+				
+				// When CocosBuilder automatically changes bitmap sizes depending on the device it's on, and uses the "resources-*" folders
+				// Including "resources-*" in the folders would cause it to look in resources-*/resources-*
+				if (pathToBitmap.length > 0) {
+					var secondLastSlashIndex:int = pathToBitmap.lastIndexOf("/", pathToBitmap.length-2);
+					if (secondLastSlashIndex != -1) {
+						lastPart = pathToBitmap.substr(secondLastSlashIndex+1, pathToBitmap.length-2);
+					}
+					else {
+						lastPart = pathToBitmap;
+					}
+					if (lastPart.indexOf("resources-") == 0) {
+						if (secondLastSlashIndex != -1) {
+							pathToBitmap = pathToBitmap.substr(0, secondLastSlashIndex+1);
+						}
+						else {
+							pathToBitmap = "";
+						}
+					}
+					
+				}
+				
+				if (saveJson.selected) {
+					m_asset.saveJson(ccbPath);
+				}
+				
+				if (saveStar.selected) {
+					m_asset.saveBinary(ccbPath);
+				}
+				
+				var json:Object = m_asset.toJSON();
+				
+				CCBWriter.writeCCB(json, m_asset.name, ccbPath, pathToBitmap, Math.pow(2, 2-bitmapQ.selectedIndex)/2.2, Math.pow(2, 2-basicG.selectedIndex));
+				
+				m_asset.saveAllBitmaps(ccbPath+origPathToBm);
+				
+				// Exported, try one more
+				if (dropfiles.length > 0) {
+					dropfiles.shift();
+					tryNextFile();
+				}
+				
+				bmPath = origPathToBm;
+				
+				if (!clear.selected) {
+					clearDirs();
+				}
+			}
+			
+			private function getClassName(cl:Class):String {
+				if (cl == null) {
+					return "";
+				}
+				var clName:String = flash.utils.getQualifiedClassName(cl);
+				clName = clName.replace("::", ".");
+				return clName;
+			}		
+			
+			private static function getFileBasePath(path:String):String {
+				var p1:int = path.lastIndexOf("/");
+				p1 = (p1 < 0) ? 0 : p1 + 1;
+				return path.substr(0, p1);
+			}
+			
+			// This method is called to dispose any unused textures in the UI system.  This should be called periodically, or after a major
+			// dialog is closed in order to release the texture memory used by that UI.  Never calling this method will cause a game to 
+			// eventually use all of it's texture memory for UI textures.
+			public static function sweepTextureCache():void {
+				var disposedTextures:Vector.<String> = new Vector.<String>();
+				
+				for (var textureId:String in s_textureCache) {
+					var texture:starling.textures.Texture = s_textureCache[textureId];
+					if (texture.refCount <= 0 && !texture.isDisposed) {
+						texture.dispose();
+					}
+					if (texture.isDisposed) {
+						disposedTextures.push(textureId);
+					}
+				}
+				
+				for (var disposedId:String in disposedTextures) {
+					delete s_textureCache[disposedId];
+				}
+			}
+			
+			public function clearDirs():void {
+				ccbDir = null;
+				bmPath = null;
+			}
+		]]>
+		
+	</fx:Script>
+	<s:Button x="10" y="10" label=" Load File"
+			  click = "onLoadFile(event);"/>
+	<s:Button x="91" y="10" label=" Load Directory" click = "onLoadDirectory(event);"/>
+	<s:CheckBox x="583" y="11" id="check1" label="Save to same location as swf"/>
+	<s:CheckBox x="773" y="11" id="check2" selected="false" label="Save bitmaps to default bitmap location (&quot;ccbResources/resources-auto/&quot;)"/>
+	<s:Label x="199" y="10" width="86" height="11" text="Bitmap Quality:"/>
+	<s:Label x="205" y="391" width="608" height="314" fontSize="22" id="errorNotice" visible="false"
+			 text="Error Occurred. Check for error.txt where your swf is"/>
+	<s:Label x="199" y="29" width="99" height="45" text="Basic Game Device:"/>
+	<s:CheckBox id="clear" x="583" y="29" label="Save ccb and bm dirs"/>
+	<s:HSlider id="quality" x="394" y="56" maximum="9" minimum="1" stepSize="1.0" value="5"/>
+	<s:Label x="397" y="10" text="Quality of Estimate:&#xd;9 = highest, 1 = lowest&#xd;higher quality → more keyframes"/>
+	<s:ComboBox x="284" y="8" width="105" id="bitmapQ">
+		<mx:ArrayCollection id="devices">
+		</mx:ArrayCollection> 
+	</s:ComboBox>
+	<s:ComboBox x="284" y="29" width="105" id="basicG">
+		<mx:ArrayCollection id="devices0">
+		</mx:ArrayCollection> 
+	</s:ComboBox>
+	<s:TextArea id="notSupported" x="10" y="56" width="195" height="734" borderVisible="false"
+				editable="false" fontSize="10"/>
+	<s:CheckBox x="773" y="29" label="Save .json File" selected="true" id="saveJson"/>
+	<s:CheckBox x="890" y="29" label="Save .star File" id="saveStar"/>
+	
+</s:WindowedApplication>
