@@ -1,8 +1,3 @@
-The tool is used to convert existing swf files to a cub format that can be read by CocosBuilder (refer to cocosbuilder.com for details on CocosBuilder).
-
-There is a jsfl file that can help set up the .fla files, exporting all the movieClip symbols and to identify all the shape/shape tweens that need to be changed so the outputted swf can be used most optimally with swf2CCB
-
-For complete setup and use details on the tool, please refer to https://zyntranet.apps.corp.zynga.com/display/ZSTG/Swf+to+CCB+Converter
 <body             onload="placeFocus()"
      id="com-atlassian-confluence" class="theme-documentation ">
 <div id="full-height-container">
