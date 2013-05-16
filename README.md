@@ -113,9 +113,9 @@ For more info about prepping the flash files, please refer to <a href="https://z
 
 <h1><a name="SwftoCCBConverter-UseofStarling"></a>Use of Starling</h1>
 
-<p>To output the .star or .json file using the tool, just check the corresponding boxes and specify where you would like the output. Refer to a href='#SwftoCCBConverter-Workflow'>Workflow</a> for more details. </p>
+<p>To output the .star or .json file using the tool, just check the corresponding boxes and specify where you would like the output. Refer to <a href='#SwftoCCBConverter-Workflow'>Workflow</a> for more details. </p>
 
-<p>Here are some chunks of code from the <a href="https://zyntranet.apps.corp.zynga.com/display/ZSTG/Swf+to+CCB+Converter" class="external-link" rel="nofollow">swf to CCB Converter</a> that demonstrates how you can use Starling to get a starling object to display on GPU.</p>
+<p>Here are some chunks of code from the tool that demonstrates how you can use Starling to get a starling object to display on GPU.</p>
 
 <p>First, you initialize Starling by passing in the flash Stage on which you wish to display the starling objects.<br/>
 
