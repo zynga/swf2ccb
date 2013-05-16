@@ -80,7 +80,7 @@ For more info about prepping the flash files, please refer to <a href="https://z
 <span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/a0250e9b-2133-4e6f-8bec-97efa972a8e0/00000067.png" height="450px" style="border: 1px solid black" /></span></li>
 	<li>&nbsp;Once the ccb files and bitmaps are outputted, you can view them in CocosBuilder&#33;<br/>
 <span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/7c068f66-8dff-4f93-82bf-670c56572230/00000068.png" style="border: 1px solid black" /></span></li>
-	<li>&nbsp;The ccb and bitmap files are where you saved them. There is also a .json file that contains all the animation data in json format if you're interested in reading that, <a href="https://zyntranet.apps.corp.zynga.com/display/ZSTG/Zynga+Starling" class="external-link" rel="nofollow">click here</a><br/>
+	<li>&nbsp;The ccb and bitmap files are where you saved them. There is also a .json file that contains all the animation data in json format if you're interested in reading that, <a href='#SwftoCCBConverter-JsonDocumentation'>click here</a><br/>
 <span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/f1f6a612-007f-4757-a92c-36ca451ae502/00000069.png" height="400px" style="border: 1px solid black" /></span> <span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/43b346e6-b6dd-4cb9-9eb1-af025dd90ac2/00000070.png" height="400px" style="border: 1px solid black" /></span></li>
 </ol>
 
@@ -109,7 +109,7 @@ For more info about prepping the flash files, please refer to <a href="https://z
 
 <h1><a name="SwftoCCBConverter-ZStarlingOverview"></a>Overview</h1>
 
-<p>There is a modified version of <a href="http://gamua.com/starling/" class="external-link" rel="nofollow">Starling</a> that I've been developing so that animation data can be obtained from swf files so they can be rendered on GPU. The repo is <a href="https://github.com/edisontung/Starling" class="external-link" rel="nofollow">here</a>.</p>
+<p>There is a modified version of <a href="http://gamua.com/starling/" class="external-link" rel="nofollow">Starling</a> that I've been developing so that animation data can be obtained from swf files so they can be rendered on GPU. The repo is <a href="https://github.com/edisontung/Starling" class="external-link" rel="nofollow">here</a> as well as included in this project.</p>
 
 <h1><a name="SwftoCCBConverter-UseofStarling"></a>Use of Starling</h1>
 
