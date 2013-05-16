@@ -63,7 +63,13 @@ For more info about prepping the flash files, please refer to <a href="https://z
 			<li>Load Directory - Load a whole directory of swfs</li>
 			<li>Bitmap Quality - The highest resolution that you would like your game at. This ensures that your bitmaps are at a high enough quality to not be pixelated for the highest resolution game.</li>
 			<li>Basic Game Device - This is the lowest resolution you would like it at. CocosBuilder has the options to scale up everything for you, so assets are created with numbers to fit with the lowest resolution, and scaled up to the correct resolution. CocosBuilder doesn't scale down from 1.0</li>
-			<li>save options - there are default locations for where to save the outputted files. Save to same location as swf means the ccb files are saved in the same directory as the swf files that they are the output of. You will still have to choose a directory for bitmaps. The default bitmap location is relative to the ccb location. The most recently used directory for ccb files and bitmaps will only be saved if the corresponding checkbox is checked.</li>
+			<li>save options: 
+				<ol> 
+					<li> There are a few preset destinations you can choose to output to </li>
+					<li> The directories that files are saved to are only saved if you want them to be saved. </li>
+					<li> The .ccb, .star, and .json files are only saved out if you want them. </li>
+				</ol>
+			</li>
 		</ol>
 		</li>
 	</ol>
@@ -89,7 +95,7 @@ For more info about prepping the flash files, please refer to <a href="https://z
 
 
 		<span id="title-text">
-					           <a name='ZyngaStarling'>Zynga Starling</a>
+					           <a name='ZyngaStarling'>Zynga Starling/Starling Output</a>
     				</span>
     </h1>
 
@@ -106,6 +112,8 @@ For more info about prepping the flash files, please refer to <a href="https://z
 <p>There is a modified version of <a href="http://gamua.com/starling/" class="external-link" rel="nofollow">Starling</a> that I've been developing so that animation data can be obtained from swf files so they can be rendered on GPU. The repo is <a href="https://github.com/edisontung/Starling" class="external-link" rel="nofollow">here</a>.</p>
 
 <h1><a name="SwftoCCBConverter-UseofStarling"></a>Use of Starling</h1>
+
+<p>To output the .star or .json file using the tool, just check the corresponding boxes and specify where you would like the output. Refer to a href='#SwftoCCBConverter-Workflow'>Workflow</a> for more details. </p>
 
 <p>Here are some chunks of code from the <a href="https://zyntranet.apps.corp.zynga.com/display/ZSTG/Swf+to+CCB+Converter" class="external-link" rel="nofollow">swf to CCB Converter</a> that demonstrates how you can use Starling to get a starling object to display on GPU.</p>
 
