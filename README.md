@@ -23,7 +23,7 @@
     <li><a href='#SwftoCCBConverter-Installation'>Installation</a></li>
     <li><a href='#SwftoCCBConverter-PreppingtheFlashfiles'>Prepping the Flash files</a></li>
     <li><a href='#SwftoCCBConverter-Workflow'>Workflow</a></li>
-    <li><a href='#ZyngaStarling'>Zynga Starling</a></li>
+    <li><a href='#ZyngaStarling'>Zynga Starling/Starling Output</a></li>
     <li><a href='#SwftoCCBConverter-ContactInfo'>Contact Info</a></li>
 </ul></div>
 
