@@ -332,10 +332,40 @@ limitations under the License.
 			{
 				if (m_asset != null && ccbDir == null) {
 					ccbDir = File.desktopDirectory;
-
-					ccbDir.browseForDirectory("Outputting ccb for " + m_asset.name + ". Please choose output folder");
-					ccbDir.addEventListener(flash.events.Event.SELECT, exportCCBDirSelected);
-					ccbDir.addEventListener(flash.events.Event.CANCEL, exportCCBDirCancelled);
+					
+					var dirString:String = "Outputting";
+					var outputting:Boolean = false;
+					
+					if (saveCCB.selected) {
+						dirString += "ccb";
+						outputting = true;
+					}
+					
+					if (saveJson.selected) {
+						if (outputting) {
+							dirString += "/";
+						}
+						
+						dirString += "json";
+						outputting = true;
+					}
+					
+					if (saveStar.selected) {
+						if (outputting) {
+							dirString += "/";
+						}
+						
+						dirString += "star";
+						outputting = true;
+					}
+					
+					if (outputting) {
+						dirString += " for " + m_asset.name + ". Please choose output folder";
+	
+						ccbDir.browseForDirectory(dirString);
+						ccbDir.addEventListener(flash.events.Event.SELECT, exportCCBDirSelected);
+						ccbDir.addEventListener(flash.events.Event.CANCEL, exportCCBDirCancelled);
+					}
 				}
 				else if (ccbDir != null) {
 					if (bmPath) {
@@ -417,11 +447,13 @@ limitations under the License.
 					m_asset.saveBinary(ccbPath);
 				}
 				
-				var json:Object = m_asset.toJSON();
-				
-				CCBWriter.writeCCB(json, m_asset.name, ccbPath, pathToBitmap, Math.pow(2, 2-bitmapQ.selectedIndex)/2.2, Math.pow(2, 2-basicG.selectedIndex));
-				
-				m_asset.saveAllBitmaps(ccbPath+origPathToBm);
+				if (saveCCB.selected) {
+					var json:Object = m_asset.toJSON();
+					
+					CCBWriter.writeCCB(json, m_asset.name, ccbPath, pathToBitmap, Math.pow(2, 2-bitmapQ.selectedIndex)/2.2, Math.pow(2, 2-basicG.selectedIndex));
+					
+					m_asset.saveAllBitmaps(ccbPath+origPathToBm);
+				}
 				
 				// Exported, try one more
 				if (dropfiles.length > 0) {
@@ -503,5 +535,6 @@ limitations under the License.
 				editable="false" fontSize="10"/>
 	<s:CheckBox x="773" y="29" label="Save .json File" selected="true" id="saveJson"/>
 	<s:CheckBox x="890" y="29" label="Save .star File" id="saveStar"/>
+	<s:CheckBox id="saveCCB" x="1003" y="29" label="Save .ccb File" selected="true"/>
 	
 </s:WindowedApplication>

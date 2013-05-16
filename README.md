@@ -55,7 +55,7 @@ For more info about prepping the flash files, please refer to <a href="https://z
 	<li>After you clone the repo from GitHub (or just download the tool itself), if there are any previous versions installed, please close it (if you do not know how to use git, refer to <a href="http://www.siteground.com/tutorials/git/commands.htm" class="external-link" rel="nofollow">this link</a>, or just google it yourself). Then, start off by running the air app, which looks like this:<br/>
 <span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/9efc50e4-0cd6-4732-b8cd-cfdb4acd11c3/00000066.png" style="border: 1px solid black" /></span></li>
 	<li>&nbsp;Once you run it, the top of the app looks like this starting off:&nbsp;<br/>
-<span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/43eae99b-5b5b-4a27-8a7b-7bb0f1999d95/00000064.png" width="1000px" style="border: 1px solid black" /></span>
+<span class="image-wrap" style=""><img src="http://content.screencast.com/users/edisontung/folders/Jing/media/a684430c-8d14-4aa2-89e9-6f520039fc14/00000080.png" width="1000px" style="border: 1px solid black" /></span>
 	<ol>
 		<li>The different options are as such:
 		<ol>

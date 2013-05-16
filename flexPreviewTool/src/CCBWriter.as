@@ -282,6 +282,7 @@ package
 		private static var mBMPath:String;
 		private static var mScaleAll:Number;
 		private static var mBitmapScale:Number;
+		private static var mFps:Number = 30.0;
 		
 		public static function writeCCB(json:Object, filename:String, basePath:String, bmPath:String, bitmapScale:Number, smallestSize:Number):void {
 			var byteArray:ByteArray = new ByteArray();
@@ -389,7 +390,7 @@ package
 			var isFile:Boolean = false;
 			var flipYPivot:Boolean = false;
 			
-			if (obj.totalFrames && obj.totalFrames > curTotalFrames && obj.symbolName && obj.symbolName != curFile) {
+			if (obj.totalFrames && (obj.totalFrames != curTotalFrames && obj.totalFrames > 1) && obj.symbolName && obj.symbolName != curFile) {
 				origCurFrames = curTotalFrames;
 				writeCCB4Symbols(obj, basePath);
 				curTotalFrames = origCurFrames;
@@ -898,10 +899,10 @@ package
 				ret += animFrameBeforeTime;
 				
 				if (tracks["end"]["frames"][i] > curTotalFrames) {
-					ret += "" + (curTotalFrames+1) / 30.0;
+					ret += "" + (curTotalFrames+1) / mFps;
 				}
 				else {
-					ret += "" + (tracks["end"]["frames"][i]-1) / 30.0;
+					ret += "" + (tracks["end"]["frames"][i]-1) / mFps;
 				}
 				ret += animFrameAfterTime;
 				ret += "5";
@@ -1128,7 +1129,7 @@ package
 					ret += animFrameStart;
 					ret += type;
 					ret += animFrameBeforeTime;
-					ret += "" + (curEndFrame-2) / 30.0;
+					ret += "" + (curEndFrame-2) / mFps;
 					ret += animFrameAfterTime;
 					ret += typeNums[type]
 					ret += animFrameAfterTypeNum;
@@ -1170,10 +1171,10 @@ package
 						ret += animFrameBeforeTime;
 						
 						if (curEndFrame > curTotalFrames) {
-							ret += "" + (curTotalFrames+1) / 30.0;
+							ret += "" + (curTotalFrames+1) / mFps;
 						}
 						else {
-							ret += "" + (curEndFrame-1) / 30.0;
+							ret += "" + (curEndFrame-1) / mFps;
 						}
 						ret += animFrameAfterTime;
 						ret += typeNums[type]
@@ -1212,7 +1213,7 @@ package
 						ret += animFrameStart;
 						ret += type;
 						ret += animFrameBeforeTime;
-						ret += "" + (curEndFrame) / 30.0;
+						ret += "" + (curEndFrame) / mFps;
 						ret += animFrameAfterTime;
 						ret += typeNums[type]
 						ret += animFrameAfterTypeNum;
@@ -1316,10 +1317,10 @@ package
 					ret += animFrameBeforeTime;
 					
 					if (tracks["end"]["frames"][i] > curTotalFrames) {
-						ret += "" + (curTotalFrames+1) / 30.0;
+						ret += "" + (curTotalFrames+1) / mFps;
 					}
 					else {
-						ret += "" + (tracks["end"]["frames"][i]-1) / 30.0;
+						ret += "" + (tracks["end"]["frames"][i]-1) / mFps;
 					}
 					ret += animFrameAfterTime;
 					ret += "2";
@@ -1371,7 +1372,7 @@ package
 						}
 						
 						ret += animFrameBeforeTime;
-						ret += "" + (tracks["start"]["frames"][i+1]-1) / 30.0;
+						ret += "" + (tracks["start"]["frames"][i+1]-1) / mFps;
 						ret += animFrameAfterTime;
 						ret += "2";
 						ret += animFrameAfterTypeNum;
@@ -1436,10 +1437,10 @@ package
 				ret += animFrameBeforeTime;
 				
 				if (tracks["start"]["frames"][i] > curTotalFrames) {
-					ret += "" + (curTotalFrames+1)/ 30.0;
+					ret += "" + (curTotalFrames+1)/ mFps;
 				}
 				else {
-					ret += "" + (tracks["start"]["frames"][i]-1) / 30.0;
+					ret += "" + (tracks["start"]["frames"][i]-1) / mFps;
 				}
 				ret += animFrameAfterTime;
 				ret += "1";
