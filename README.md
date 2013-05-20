@@ -38,7 +38,7 @@
 
 <p>There is a jsfl script in the repo that you can run on your fla files to export all the movieClip symbols and to identify all the shape/shape tweens that need to be changed so the outputted swf can be used optimally with swf2Cocos. To run it, open the Flash file and do Command > Run Command and select exportAndID.jsfl. The movie clips are then exported, and the output displays the animations that will cause problems: <img src="http://content.screencast.com/users/edisontung/folders/Jing/media/1bda6e79-989f-4151-ac49-9551f676d8a4/00000082.png" /> </p>
 
-<p>The air app is located here:<a href="https://github-ca.corp.zynga.com/etung/swfDumper/blob/master/flexPreviewTool/flexPreviewTool.air" class="external-link" rel="nofollow">&nbsp;https://github-ca.corp.zynga.com/etung/swfDumper/blob/master/flexPreviewTool/flexPreviewTool.air</a>. Just download and run it.</p>
+<p>The air app is located here:<a href="https://github.com/zynga/swf2ccb/blob/master/flexPreviewTool/swf2ccb.air" class="external-link" rel="nofollow">&nbsp;https://github.com/zynga/swf2ccb/blob/master/flexPreviewTool/swf2ccb.air</a>. Just download and run it.</p>
 
 <h1><a name="SwftoCCBConverter-PreppingtheFlashfiles"></a>Prepping the Flash files</h1>
 
@@ -107,7 +107,7 @@ For more info about prepping the flash files, please refer to <a href="https://z
 
 <h1><a name="SwftoCCBConverter-ZStarlingOverview"></a>Overview</h1>
 
-<p>There is a modified version of <a href="http://gamua.com/starling/" class="external-link" rel="nofollow">Starling</a> that I've been developing so that animation data can be obtained from swf files so they can be rendered on GPU. The repo is <a href="https://github.com/edisontung/Starling" class="external-link" rel="nofollow">here</a> as well as included in this project.</p>
+<p>There is a modified version of <a href="http://gamua.com/starling/" class="external-link" rel="nofollow">Starling</a> that I've been developing so that animation data can be obtained from swf files so they can be rendered on GPU. The repo is <a href="https://github.com/zynga/swf2ccb/tree/master/Starling_zynga" class="external-link" rel="nofollow">here</a> as well as included in this project.</p>
 
 <h1><a name="SwftoCCBConverter-UseofStarling"></a>Use of Starling</h1>
 
