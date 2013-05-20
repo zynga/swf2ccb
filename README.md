@@ -34,11 +34,9 @@
 
 <h1><a name="SwftoCCBConverter-Installation"></a>Installation</h1>
 
-<p>The repo is located here:&nbsp;<a href="https://github-ca.corp.zynga.com/etung/swfDumper" class="external-link" rel="nofollow">https://github-ca.corp.zynga.com/etung/swfDumper</a></p>
+<p> It should work with the newest version of Air, but if not, try downloading the&nbsp;<a href="https:/https://github.com/zynga/swf2ccb/blob/master/air3-5_mac.dmg" class="external-link" rel="nofollow">air3-5_mac.dmg</a>&nbsp;for the a working tool with Adobe AIR (if you have a higher version installed, please uninstall it and install AIR 3.5).</p>
 
-<p>Be sure to download the&nbsp;<a href="https://github-ca.corp.zynga.com/etung/swfDumper/blob/master/air3-5_mac.dmg" class="external-link" rel="nofollow">air3-5_mac.dmg</a>&nbsp;for the correct Adobe AIR version (if you have a higher version installed, please uninstall it and install AIR 3.5).</p>
-
-<p>There is a jsfl script in the repo that you can run on your fla files to export all the movieClip symbols and to identify all the shape/shape tweens that need to be changed so the outputted swf can be used optimally with swf2Cocos</p>
+<p>There is a jsfl script in the repo that you can run on your fla files to export all the movieClip symbols and to identify all the shape/shape tweens that need to be changed so the outputted swf can be used optimally with swf2Cocos. To run it, open the Flash file and do Command > Run Command and select exportAndID.jsfl. The movie clips are then exported, and the output displays the animations that will cause problems: <img src="http://content.screencast.com/users/edisontung/folders/Jing/media/1bda6e79-989f-4151-ac49-9551f676d8a4/00000082.png" /> </p>
 
 <p>The air app is located here:<a href="https://github-ca.corp.zynga.com/etung/swfDumper/blob/master/flexPreviewTool/flexPreviewTool.air" class="external-link" rel="nofollow">&nbsp;https://github-ca.corp.zynga.com/etung/swfDumper/blob/master/flexPreviewTool/flexPreviewTool.air</a>. Just download and run it.</p>
 
