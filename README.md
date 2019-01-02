@@ -1,23 +1,7 @@
-<body             onload="placeFocus()"
-     id="com-atlassian-confluence" class="theme-documentation ">
-<div id="full-height-container">
+**Please note:** This project is deprecated at Zynga and is no longer maintained.
 
+---
 
-    
-    <h1 id="title-heading" class="pagetitle">
-
-
-                            
-
-
-		<span id="title-text">
-					            Swf to CCB Converter
-    				</span>
-    </h1>
-
-    
-
-<div>
 <ul>
     <li><a href='#SwftoCCBConverter-Overview'>Overview</a></li>
     <li><a href='#SwftoCCBConverter-Installation'>Installation</a></li>
